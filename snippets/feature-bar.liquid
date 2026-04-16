@@ -1,96 +1,25 @@
 <style>
-  .feature-bar {
-    overflow: hidden;
-    position: relative;
-    padding: 4px 0;
-    margin: 8px 0 0;
-    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-            mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
-  }
-
-  .feature-track {
-    display: flex;
-    width: max-content;
-    animation: feature-scroll 22s linear infinite;
-    will-change: transform;
-  }
-
-  .feature-bar:hover .feature-track { animation-play-state: paused; }
-
-  .feature-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 22px;
-    flex: 0 0 auto;
-    white-space: nowrap;
-  }
-
-  .feature-item img {
-    height: 20px;
-    width: auto;
-    display: block;
-  }
-
-  .feature-item p {
-    font-size: 11px;
-    margin: 0;
-    line-height: 1;
-    letter-spacing: 0.3px;
-  }
-
-  @keyframes feature-scroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  @media (max-width: 768px) {
-    .feature-bar { padding: 3px 0; margin-top: 6px; }
-    .feature-item { padding: 0 14px; gap: 5px; }
-    .feature-item img { height: 18px; }
-    .feature-item p { font-size: 10px; }
-    .feature-track { animation-duration: 18s; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .feature-track { animation: none; transform: translateX(0); }
-  }
+.fb{overflow:hidden;padding:4px 0;margin:8px 0 0}
+.fb-t{display:flex;width:max-content;animation:fb 22s linear infinite}
+.fb:hover .fb-t{animation-play-state:paused}
+.fb-i{display:inline-flex;align-items:center;gap:6px;padding:0 22px;flex:0 0 auto;white-space:nowrap}
+.fb-i img{height:20px;width:auto;display:block}
+.fb-i p{font-size:11px;margin:0;line-height:1;letter-spacing:.3px}
+@keyframes fb{to{transform:translateX(-50%)}}
+@media(max-width:768px){.fb{padding:3px 0;margin-top:6px}.fb-i{padding:0 14px;gap:5px}.fb-i img{height:18px}.fb-i p{font-size:10px}.fb-t{animation-duration:18s}}
+@media(prefers-reduced-motion:reduce){.fb-t{animation:none}}
 </style>
 
-<div class="feature-bar" aria-label="Product highlights">
-  <div class="feature-track">
-    <div class="feature-item">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Bureau_of_Indian_Standards_Logo_svg_f4c9719b-a2c6-4887-92c7-b53469b1f5ec.png?v=1729332947" alt="BIS Certified">
-      <p>BIS Certified</p>
-    </div>
-    <div class="feature-item">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/medal_1126fff9-591c-4467-b978-8d7c7154af65.png?v=1729319260" alt="Silver">
-      <p>Pure 92.5 Silver</p>
-    </div>
-    <div class="feature-item">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_4.png?v=1740494409" alt="Handcrafted">
-      <p>Handcrafted</p>
-    </div>
-    <div class="feature-item">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_5.png?v=1740494431" alt="Certification">
-      <p>Includes Certificate</p>
-    </div>
+<div class="fb">
+  <div class="fb-t">
+    <div class="fb-i"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Bureau_of_Indian_Standards_Logo_svg_f4c9719b-a2c6-4887-92c7-b53469b1f5ec.png?v=1729332947" alt="BIS"><p>BIS Certified</p></div>
+    <div class="fb-i"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/medal_1126fff9-591c-4467-b978-8d7c7154af65.png?v=1729319260" alt="Silver"><p>Pure 92.5 Silver</p></div>
+    <div class="fb-i"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_4.png?v=1740494409" alt="Handcrafted"><p>Handcrafted</p></div>
+    <div class="fb-i"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_5.png?v=1740494431" alt="Certificate"><p>Includes Certificate</p></div>
 
-    <div class="feature-item" aria-hidden="true">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Bureau_of_Indian_Standards_Logo_svg_f4c9719b-a2c6-4887-92c7-b53469b1f5ec.png?v=1729332947" alt="">
-      <p>BIS Certified</p>
-    </div>
-    <div class="feature-item" aria-hidden="true">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/medal_1126fff9-591c-4467-b978-8d7c7154af65.png?v=1729319260" alt="">
-      <p>Pure 92.5 Silver</p>
-    </div>
-    <div class="feature-item" aria-hidden="true">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_4.png?v=1740494409" alt="">
-      <p>Handcrafted</p>
-    </div>
-    <div class="feature-item" aria-hidden="true">
-      <img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_5.png?v=1740494431" alt="">
-      <p>Includes Certificate</p>
-    </div>
+    <div class="fb-i" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Bureau_of_Indian_Standards_Logo_svg_f4c9719b-a2c6-4887-92c7-b53469b1f5ec.png?v=1729332947" alt=""><p>BIS Certified</p></div>
+    <div class="fb-i" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/medal_1126fff9-591c-4467-b978-8d7c7154af65.png?v=1729319260" alt=""><p>Pure 92.5 Silver</p></div>
+    <div class="fb-i" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_4.png?v=1740494409" alt=""><p>Handcrafted</p></div>
+    <div class="fb-i" aria-hidden="true"><img src="https://cdn.shopify.com/s/files/1/0854/9777/4366/files/Frame_ss_5.png?v=1740494431" alt=""><p>Includes Certificate</p></div>
   </div>
 </div>
