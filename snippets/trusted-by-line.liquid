@@ -1,0 +1,33 @@
+{%- comment -%}
+  Simple trust line to sit above the price.
+
+  Optional params:
+    text — defaults to "Trusted by 100,000+ Customers Worldwide"
+{%- endcomment -%}
+
+<style>
+  .trusted-by-line{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin: 0.35em 0 0.65em;
+    padding: 0.35em 0.75em;
+    background: #fff4ed;
+    border-radius: 4px;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: #b33a2b;
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+  .trusted-by-line__icon{
+    color: #e8873a;
+    font-size: 1em;
+    line-height: 1;
+  }
+</style>
+
+<p class="trusted-by-line">
+  <span class="trusted-by-line__icon" aria-hidden="true">&#10024;</span>
+  {{ text | default: 'Trusted by 100,000+ Customers Worldwide' }}
+</p>
