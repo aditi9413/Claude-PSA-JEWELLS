@@ -504,7 +504,7 @@
 
           {%- if section.settings.trust_rating_text != blank -%}
             <div class="cart-trust-bottom__rating-text">
-              {{ section.settings.trust_rating_text | replace: '{{rating}}', rating_value }}
+              {{ section.settings.trust_rating_text | replace: '[rating]', rating_value }}
             </div>
           {%- endif -%}
 
@@ -634,8 +634,8 @@
     {
       "type": "text",
       "id": "trust_rating_text",
-      "label": "Rating text (use {{rating}} for value)",
-      "default": "Rated {{rating}}/5 by 2,500+ verified buyers"
+      "label": "Rating text (use [rating] for value)",
+      "default": "Rated [rating]/5 by 2,500+ verified buyers"
     },
     {
       "type": "text",
