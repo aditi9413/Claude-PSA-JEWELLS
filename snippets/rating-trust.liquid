@@ -1,0 +1,112 @@
+{%- comment -%}
+  Social-proof rating row (avatars + stars + rating text).
+
+  Optional params:
+    rating        — numeric rating (e.g. 4.9)
+    review_count  — number of reviews (e.g. 8345)
+    review_label  — label after the count (default: "reviews")
+    avatar_1 ... avatar_5 — image objects from section settings; each falls back to a gradient placeholder
+{%- endcomment -%}
+
+<style>
+  .rating-trust{
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    margin: 0.5em 0 0.75em;
+    flex-wrap: wrap;
+  }
+  .rating-trust__avatars{
+    display: inline-flex;
+    align-items: center;
+  }
+  .rating-trust__avatar{
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: linear-gradient(135deg, #e8c9b6, #b68a66);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    object-fit: cover;
+    margin-left: -8px;
+    flex: 0 0 auto;
+  }
+  .rating-trust__avatar:first-child{ margin-left: 0; }
+  .rating-trust__avatar--2{ background: linear-gradient(135deg, #d9b3d4, #8b5d93); }
+  .rating-trust__avatar--3{ background: linear-gradient(135deg, #c6d7e8, #5b7fa0); }
+  .rating-trust__avatar--4{ background: linear-gradient(135deg, #e8d0c6, #9e6a55); }
+  .rating-trust__avatar--5{ background: linear-gradient(135deg, #d6c1e0, #7e5a95); }
+  .rating-trust__content{
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .rating-trust__stars-row{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+  .rating-trust__stars{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1em;
+    color: #f5a623;
+  }
+  .rating-trust__stars svg{ width: 14px; height: 14px; }
+  .rating-trust__value{
+    font-weight: 700;
+    font-size: 0.95em;
+    color: #3a2a4a;
+  }
+  .rating-trust__count{
+    font-size: 0.78em;
+    color: #6b5f55;
+    margin-top: 0.15em;
+  }
+</style>
+
+{%- assign rating_value = rating | default: 4.9 -%}
+{%- assign reviews_value = review_count | default: 8345 -%}
+{%- assign reviews_label = review_label | default: 'reviews' -%}
+
+<div class="rating-trust" role="note" aria-label="Customer rating">
+  <div class="rating-trust__avatars" aria-hidden="true">
+    {%- if avatar_1 != blank -%}
+      {{ avatar_1 | image_url: width: 56 | image_tag: class: 'rating-trust__avatar', loading: 'lazy', widths: '28,56', sizes: '28px' }}
+    {%- else -%}
+      <span class="rating-trust__avatar rating-trust__avatar--1"></span>
+    {%- endif -%}
+    {%- if avatar_2 != blank -%}
+      {{ avatar_2 | image_url: width: 56 | image_tag: class: 'rating-trust__avatar', loading: 'lazy', widths: '28,56', sizes: '28px' }}
+    {%- else -%}
+      <span class="rating-trust__avatar rating-trust__avatar--2"></span>
+    {%- endif -%}
+    {%- if avatar_3 != blank -%}
+      {{ avatar_3 | image_url: width: 56 | image_tag: class: 'rating-trust__avatar', loading: 'lazy', widths: '28,56', sizes: '28px' }}
+    {%- else -%}
+      <span class="rating-trust__avatar rating-trust__avatar--3"></span>
+    {%- endif -%}
+    {%- if avatar_4 != blank -%}
+      {{ avatar_4 | image_url: width: 56 | image_tag: class: 'rating-trust__avatar', loading: 'lazy', widths: '28,56', sizes: '28px' }}
+    {%- else -%}
+      <span class="rating-trust__avatar rating-trust__avatar--4"></span>
+    {%- endif -%}
+    {%- if avatar_5 != blank -%}
+      {{ avatar_5 | image_url: width: 56 | image_tag: class: 'rating-trust__avatar', loading: 'lazy', widths: '28,56', sizes: '28px' }}
+    {%- else -%}
+      <span class="rating-trust__avatar rating-trust__avatar--5"></span>
+    {%- endif -%}
+  </div>
+
+  <div class="rating-trust__content">
+    <span class="rating-trust__stars-row">
+      <span class="rating-trust__stars" aria-hidden="true">
+        {%- for i in (1..5) -%}
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6 6.6.95-4.78 4.55 1.13 6.6L12 17.3l-5.85 2.8 1.13-6.6L2.5 8.95 9.1 8z"/></svg>
+        {%- endfor -%}
+      </span>
+      <span class="rating-trust__value">{{ rating_value }}</span>
+    </span>
+    <span class="rating-trust__count">from {{ reviews_value }} {{ reviews_label }}</span>
+  </div>
+</div>
