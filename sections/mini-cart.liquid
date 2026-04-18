@@ -17,33 +17,53 @@
     background: white;
   }
 
-  /* Trust signals (above checkout) */
-  .cart-trust-top{
+  /* Trust signals (3-card grid above checkout) */
+  .cart-trust-cards{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5em;
+    margin: 0 0 0.85em;
+  }
+  .cart-trust-card{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 0.35em;
-    padding: 0.7em 0.9em;
-    margin: 0 0 0.75em;
-    background: #f7f3ef;
-    border: 1px solid #ece3d8;
-    border-radius: 6px;
-    font-size: 0.8em;
-    line-height: 1.3;
-    color: #3a2a4a;
+    justify-content: flex-start;
     text-align: center;
+    padding: 0.75em 0.4em;
+    background: #fff;
+    border: 1px solid #ead7c9;
+    border-radius: 8px;
+    color: #3a2a4a;
+    line-height: 1.25;
   }
-  .cart-trust-top__item{
+  .cart-trust-card__icon{
+    color: #3a2a4a;
+    margin-bottom: 0.45em;
     display: inline-flex;
     align-items: center;
-    gap: 0.4em;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    justify-content: center;
   }
-  .cart-trust-top__item svg{
-    flex: 0 0 auto;
-    color: #c99b1e;
+  .cart-trust-card__icon svg{
+    width: 28px;
+    height: 28px;
+  }
+  .cart-trust-card__title{
+    font-size: 0.72em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.2em;
+  }
+  .cart-trust-card__subtitle{
+    font-size: 0.62em;
+    color: #6b5f55;
+    font-weight: 500;
+    margin: 0;
+  }
+  @media (max-width: 420px){
+    .cart-trust-card__title{ font-size: 0.68em; }
+    .cart-trust-card__subtitle{ font-size: 0.58em; }
+    .cart-trust-card__icon svg{ width: 24px; height: 24px; }
   }
 </style>
 
@@ -413,26 +433,40 @@
       {%- endif -%}
 
       {%- if section.settings.show_trust_badges_top -%}
-        <div class="cart-trust-top" role="note" aria-label="Trust badges">
-          {%- if section.settings.trust_badge_customers_text != blank -%}
-            <span class="cart-trust-top__item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M4 21v-2a4 4 0 0 1 3-3.87"/>
-                <circle cx="12" cy="7" r="4"/>
+        <div class="cart-trust-cards" role="note" aria-label="Trust badges">
+          <div class="cart-trust-card">
+            <span class="cart-trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/>
+                <circle cx="10" cy="7" r="3.5"/>
+                <path d="M21 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M17 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
-              {{ section.settings.trust_badge_customers_text }}
             </span>
-          {%- endif -%}
+            <p class="cart-trust-card__title">{{ section.settings.trust_card_1_title | default: '10,000+ Customers Chose Us' }}</p>
+            <p class="cart-trust-card__subtitle">{{ section.settings.trust_card_1_subtitle | default: 'And Came Back' }}</p>
+          </div>
 
-          {%- if section.settings.trust_badge_rating_text != blank -%}
-            <span class="cart-trust-top__item">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 2l3 6 6 .9-4.5 4.2 1.1 6.4L12 16.8 6.4 19.5 7.5 13.1 3 8.9 9 8z"/>
+          <div class="cart-trust-card">
+            <span class="cart-trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l2.9 6 6.6.95-4.78 4.55 1.13 6.6L12 17.3l-5.85 2.8 1.13-6.6L2.5 8.95 9.1 8z"/>
               </svg>
-              {{ section.settings.trust_badge_rating_text }}
             </span>
-          {%- endif -%}
+            <p class="cart-trust-card__title">{{ section.settings.trust_card_2_title | default: '4.9★ Rating' }}</p>
+            <p class="cart-trust-card__subtitle">{{ section.settings.trust_card_2_subtitle | default: 'from 2,500+ Verified Buyers' }}</p>
+          </div>
+
+          <div class="cart-trust-card">
+            <span class="cart-trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </span>
+            <p class="cart-trust-card__title">{{ section.settings.trust_card_3_title | default: 'Purity Guaranteed' }}</p>
+            <p class="cart-trust-card__subtitle">{{ section.settings.trust_card_3_subtitle | default: 'Certified Silver' }}</p>
+          </div>
         </div>
       {%- endif -%}
 
@@ -541,15 +575,39 @@
     },
     {
       "type": "text",
-      "id": "trust_badge_customers_text",
-      "label": "Happy customers text",
-      "default": "Trusted by 10,000+ happy customers & repeat buyers"
+      "id": "trust_card_1_title",
+      "label": "Card 1 title",
+      "default": "10,000+ Customers Chose Us"
     },
     {
       "type": "text",
-      "id": "trust_badge_rating_text",
-      "label": "Rating text",
-      "default": "Rated 4.9/5 by 2,500+ verified buyers"
+      "id": "trust_card_1_subtitle",
+      "label": "Card 1 subtitle",
+      "default": "And Came Back"
+    },
+    {
+      "type": "text",
+      "id": "trust_card_2_title",
+      "label": "Card 2 title",
+      "default": "4.9\u2605 Rating"
+    },
+    {
+      "type": "text",
+      "id": "trust_card_2_subtitle",
+      "label": "Card 2 subtitle",
+      "default": "from 2,500+ Verified Buyers"
+    },
+    {
+      "type": "text",
+      "id": "trust_card_3_title",
+      "label": "Card 3 title",
+      "default": "Purity Guaranteed"
+    },
+    {
+      "type": "text",
+      "id": "trust_card_3_subtitle",
+      "label": "Card 3 subtitle",
+      "default": "Certified Silver"
     }
   ]
 }
