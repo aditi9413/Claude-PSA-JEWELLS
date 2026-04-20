@@ -1,12 +1,12 @@
 <style>
-.fb{overflow:hidden;padding:5px 0;margin:8px 0 0;width:100%;max-width:100%;min-width:0;flex-basis:100%;box-sizing:border-box;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 28px,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 28px,#000 calc(100% - 28px),transparent 100%)}
-.fb-t{display:flex;width:max-content;animation:fb 22s linear infinite}
+.fb{position:relative!important;display:block!important;overflow:hidden!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;height:34px;margin:8px 0 0;padding:0;contain:layout paint;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 28px,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 28px,#000 calc(100% - 28px),transparent 100%)}
+.fb-t{position:absolute;top:0;left:0;height:100%;display:flex;align-items:center;width:max-content;animation:fb 22s linear infinite;will-change:transform}
 .fb:hover .fb-t{animation-play-state:paused}
-.fb-i{display:inline-flex;align-items:center;gap:7px;padding:0 22px;flex:0 0 auto;white-space:nowrap}
-.fb-i img{height:24px;width:auto;display:block}
+.fb-i{display:inline-flex;align-items:center;gap:7px;padding:0 22px;flex:0 0 auto;white-space:nowrap;height:100%}
+.fb-i img{height:22px;width:auto;display:block}
 .fb-i p{font-size:13px;margin:0;line-height:1;letter-spacing:.3px}
 @keyframes fb{to{transform:translateX(-50%)}}
-@media(max-width:768px){.fb{padding:4px 0;margin-top:6px;max-width:100vw;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}.fb-i{padding:0 14px;gap:6px}.fb-i img{height:20px}.fb-i p{font-size:11px}.fb-t{animation-duration:18s}}
+@media(max-width:768px){.fb{height:28px;margin-top:6px;-webkit-mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}.fb-i{padding:0 14px;gap:6px}.fb-i img{height:18px}.fb-i p{font-size:11px}.fb-t{animation-duration:18s}}
 @media(prefers-reduced-motion:reduce){.fb-t{animation:none}}
 </style>
 
