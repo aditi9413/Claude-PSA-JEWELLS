@@ -7,9 +7,15 @@
         if request.path contains '/pages/925-sterling-silver-jewellery-gifts'
           assign on_jewellery_page = true
         endif
-        assign show = true
-        if label contains '[j]' and on_jewellery_page == false
-          assign show = false
+        assign is_jewellery_icon = false
+        if label contains '[j]'
+          assign is_jewellery_icon = true
+        endif
+        assign show = false
+        if on_jewellery_page and is_jewellery_icon
+          assign show = true
+        elsif on_jewellery_page == false and is_jewellery_icon == false
+          assign show = true
         endif
         assign clean_label = block.settings.text | replace: '[J]', '' | replace: '[j]', '' | strip
       -%}
