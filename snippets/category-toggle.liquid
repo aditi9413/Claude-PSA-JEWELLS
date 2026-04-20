@@ -1,18 +1,18 @@
 {%- comment -%}
-  Usage (defaults wired to PSA URLs):
-    Pooja page (home):       {% render 'category-toggle', active: 'left' %}
-    Jewellery page:          {% render 'category-toggle', active: 'right' %}
+  Usage (defaults wired to PSA):
+    Home (Devotional):   {% render 'category-toggle', active: 'left' %}
+    Jewellery page:      {% render 'category-toggle', active: 'right' %}
 
   Override anything if needed:
     {% render 'category-toggle',
-       left_label: 'Pooja & Aarti', left_url: '/',
-       right_label: 'Jewellery',
+       left_label: 'Devotional Collection', left_url: '/',
+       right_label: 'Jewellery Collection',
        right_url: '/pages/925-sterling-silver-jewellery-gifts',
        active: 'left' %}
 {%- endcomment -%}
 
-{%- assign left_label  = left_label  | default: 'Pooja & Aarti' -%}
-{%- assign right_label = right_label | default: 'Jewellery' -%}
+{%- assign left_label  = left_label  | default: 'Devotional Collection' -%}
+{%- assign right_label = right_label | default: 'Jewellery Collection' -%}
 {%- assign left_url    = left_url    | default: '/' -%}
 {%- assign right_url   = right_url   | default: '/pages/925-sterling-silver-jewellery-gifts' -%}
 {%- assign active      = active      | default: 'left' -%}
@@ -23,8 +23,9 @@
 .ct-b{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;font-size:15px;font-weight:500;letter-spacing:.3px;color:var(--ct-fg);text-decoration:none;border-radius:999px;transition:background .25s ease,color .25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ct-b[aria-current="page"]{background:var(--ct-active);color:var(--ct-active-fg)}
 .ct-b:focus-visible{outline:2px solid var(--ct-border);outline-offset:2px}
-@media(min-width:769px){.ct-w{display:inline-flex}.ct-b{min-width:160px}}
-@media(max-width:768px){.ct{padding:8px 12px}.ct-w{width:100%}.ct-b{padding:9px 10px;font-size:13px}}
+@media(min-width:769px){.ct-w{display:inline-flex}.ct-b{min-width:180px}}
+@media(max-width:768px){.ct{padding:8px 10px}.ct-w{width:100%}.ct-b{padding:8px 6px;font-size:12px;letter-spacing:.2px}}
+@media(max-width:360px){.ct-b{font-size:11px;padding:8px 4px}}
 </style>
 
 <nav class="ct" aria-label="Category">
