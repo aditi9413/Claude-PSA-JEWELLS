@@ -1,16 +1,20 @@
 {%- comment -%}
-  Usage:
+  Usage (defaults wired to PSA URLs):
+    Pooja page (home):       {% render 'category-toggle', active: 'left' %}
+    Jewellery page:          {% render 'category-toggle', active: 'right' %}
+
+  Override anything if needed:
     {% render 'category-toggle',
-       left_label: 'Pooja & Aarti', left_url: '/collections/pooja-samagri',
-       right_label: 'Jewellery',    right_url: '/collections/jewellery',
+       left_label: 'Pooja & Aarti', left_url: '/',
+       right_label: 'Jewellery',
+       right_url: '/pages/925-sterling-silver-jewellery-gifts',
        active: 'left' %}
-  active: 'left' or 'right' (which pill is highlighted on this page)
 {%- endcomment -%}
 
 {%- assign left_label  = left_label  | default: 'Pooja & Aarti' -%}
 {%- assign right_label = right_label | default: 'Jewellery' -%}
-{%- assign left_url    = left_url    | default: '/collections/pooja-samagri' -%}
-{%- assign right_url   = right_url   | default: '/collections/jewellery' -%}
+{%- assign left_url    = left_url    | default: '/' -%}
+{%- assign right_url   = right_url   | default: '/pages/925-sterling-silver-jewellery-gifts' -%}
 {%- assign active      = active      | default: 'left' -%}
 
 <style>
