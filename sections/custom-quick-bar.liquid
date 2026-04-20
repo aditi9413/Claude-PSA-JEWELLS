@@ -3,19 +3,15 @@
     {% for block in section.blocks %}
       {%- liquid
         assign label = block.settings.text | downcase
-        assign show = true
-        if label contains '[j]'
-          assign show = false
-          if request.path contains '/pages/925-sterling-silver-jewellery-gifts'
-            assign show = true
-          endif
-        elsif label contains '[d]'
-          assign show = false
-          if request.path == '/'
-            assign show = true
-          endif
+        assign on_jewellery_page = false
+        if request.path contains '/pages/925-sterling-silver-jewellery-gifts'
+          assign on_jewellery_page = true
         endif
-        assign clean_label = block.settings.text | replace: '[J]', '' | replace: '[j]', '' | replace: '[D]', '' | replace: '[d]', '' | strip
+        assign show = true
+        if label contains '[j]' and on_jewellery_page == false
+          assign show = false
+        endif
+        assign clean_label = block.settings.text | replace: '[J]', '' | replace: '[j]', '' | strip
       -%}
       {% if show %}
         <div class="quick-bar-item">
@@ -88,7 +84,7 @@
         {
           "type": "text",
           "id": "text",
-          "label": "Text (prefix with [D] for home only, [J] for Jewellery page only)"
+          "label": "Text (prefix with [J] to show only on Jewellery page)"
         },
         {
           "type": "url",
