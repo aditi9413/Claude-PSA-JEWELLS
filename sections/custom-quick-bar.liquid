@@ -1,0 +1,112 @@
+<div id="quick-bar-link" class="quick-bar-container">
+  <div class="quick-bar-wrapper quick-bar-multiple-items">
+    {% for block in section.blocks %}
+      {%- liquid
+        assign show = false
+        assign where = block.settings.show_on | default: 'all'
+        if where == 'all'
+          assign show = true
+        elsif where == 'devotional' and request.path == '/'
+          assign show = true
+        elsif where == 'jewellery' and request.path contains '/pages/925-sterling-silver-jewellery-gifts'
+          assign show = true
+        endif
+      -%}
+      {% if show %}
+        <div class="quick-bar-item">
+          <a href="{{ block.settings.link }}"></a>
+          <img src="{{ block.settings.icon | img_url: '280x' }}" alt="">
+          <p>
+            {{ block.settings.text }}
+          </p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% comment %} <style>
+  #shopify-section-{{ section.id }} {
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: white;
+  }
+</style> {% endcomment %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const quickBarSection = document.querySelector("#shopify-section-{{ section.id }}");
+    const announcementBarHeight = document.querySelector(".shopify-section-announcement-bar")?.offsetHeight || 0;
+    const headerHeight = document.querySelector(".shopify-section-header")?.offsetHeight || 0;
+    if (quickBarSection) {
+      quickBarSection.style.height = "100%";
+      quickBarSection.style.opacity = "1";
+      quickBarSection.style.top = announcementBarHeight + headerHeight + "px";
+    }
+
+    const tryInitSlick = () => {
+      console.log("trying init")
+      if (window.innerWidth <= 768 && window.jQuery) {
+        $('.quick-bar-multiple-items').slick({
+          infinite: false,
+          slidesToShow: 3.5,
+          slidesToScroll: 3,
+          arrows: false,
+        });
+      } else {
+        // Wait and try again if jQuery or Slick isn't ready
+        setTimeout(tryInitSlick, 50);
+      }
+    };
+
+    tryInitSlick();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Quick Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "name": "Icon",
+      "type": "icon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "show_on",
+          "label": "Show on",
+          "options": [
+            { "value": "all",        "label": "All pages" },
+            { "value": "devotional", "label": "Devotional (home) only" },
+            { "value": "jewellery",  "label": "Jewellery page only" }
+          ],
+          "default": "all"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Quick Bar"
+    }
+  ]
+}
+{% endschema %}
