@@ -19,11 +19,12 @@
 
 <style>
 .ct{--ct-active:#2d0a2e;--ct-active-fg:#fff;--ct-border:#c9a96a;--ct-fg:#2d0a2e;display:flex;justify-content:center;padding:10px 16px;box-sizing:border-box}
-.ct-w{display:inline-flex;position:relative;border:1.5px solid var(--ct-border);border-radius:999px;padding:4px;background:#fff;max-width:100%;box-sizing:border-box}
-.ct-b{display:inline-flex;align-items:center;justify-content:center;min-width:150px;padding:10px 26px;font-size:15px;font-weight:500;letter-spacing:.3px;color:var(--ct-fg);text-decoration:none;border-radius:999px;transition:background .25s ease,color .25s ease;white-space:nowrap}
+.ct-w{display:flex;position:relative;border:1.5px solid var(--ct-border);border-radius:999px;padding:4px;background:#fff;max-width:100%;box-sizing:border-box;gap:2px}
+.ct-b{flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;font-size:15px;font-weight:500;letter-spacing:.3px;color:var(--ct-fg);text-decoration:none;border-radius:999px;transition:background .25s ease,color .25s ease;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ct-b[aria-current="page"]{background:var(--ct-active);color:var(--ct-active-fg)}
 .ct-b:focus-visible{outline:2px solid var(--ct-border);outline-offset:2px}
-@media(max-width:768px){.ct{padding:8px 12px}.ct-b{min-width:0;flex:1 1 50%;padding:9px 12px;font-size:13px}.ct-w{display:flex;width:100%}}
+@media(min-width:769px){.ct-w{display:inline-flex}.ct-b{min-width:160px}}
+@media(max-width:768px){.ct{padding:8px 12px}.ct-w{width:100%}.ct-b{padding:9px 10px;font-size:13px}}
 </style>
 
 <nav class="ct" aria-label="Category">
