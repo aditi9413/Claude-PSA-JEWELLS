@@ -15,7 +15,13 @@
 {%- assign right_label = right_label | default: 'Jewellery Collection' -%}
 {%- assign left_url    = left_url    | default: '/' -%}
 {%- assign right_url   = right_url   | default: '/pages/925-sterling-silver-jewellery-gifts' -%}
-{%- assign active      = active      | default: 'left' -%}
+{%- if active == blank -%}
+  {%- if request.path contains right_url -%}
+    {%- assign active = 'right' -%}
+  {%- else -%}
+    {%- assign active = 'left' -%}
+  {%- endif -%}
+{%- endif -%}
 
 <style>
 .ct{--ct-active:#2d0a2e;--ct-active-fg:#fff;--ct-border:#c9a96a;--ct-fg:#2d0a2e;display:flex;justify-content:center;padding:10px 16px;box-sizing:border-box}
