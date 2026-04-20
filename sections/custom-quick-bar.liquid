@@ -23,7 +23,7 @@
         <div class="quick-bar-item">
           <a href="{{ block.settings.link }}"></a>
           <img
-            src="{{ block.settings.icon | img_url: '280x' }}"
+            src="{{ block.settings.icon | img_url: '360x' }}"
             width="{{ block.settings.icon.width }}"
             height="{{ block.settings.icon.height }}"
             loading="lazy"
@@ -35,15 +35,36 @@
   </div>
 </div>
 
-{% comment %} <style>
-  #shopify-section-{{ section.id }} {
-    overflow: hidden;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: white;
+<style>
+  #shopify-section-{{ section.id }} .quick-bar-item img {
+    width: 95px !important;
+    height: 95px !important;
+    object-fit: cover;
   }
-</style> {% endcomment %}
+  #shopify-section-{{ section.id }} .quick-bar-item p {
+    font-size: 14px !important;
+    margin-top: 8px !important;
+    font-weight: 500;
+  }
+  #shopify-section-{{ section.id }} .quick-bar-wrapper {
+    gap: 24px;
+    padding: 14px 0;
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .quick-bar-item img {
+      width: 72px !important;
+      height: 72px !important;
+    }
+    #shopify-section-{{ section.id }} .quick-bar-item p {
+      font-size: 12px !important;
+      margin-top: 6px !important;
+    }
+    #shopify-section-{{ section.id }} .quick-bar-wrapper {
+      gap: 14px;
+      padding: 10px 0;
+    }
+  }
+</style>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -90,7 +111,7 @@
         {
           "type": "text",
           "id": "text",
-          "label": "Text (prefix with [J] to show only on Jewellery page)"
+          "label": "Text (prefix with [J] for Jewellery page only)"
         },
         {
           "type": "url",
