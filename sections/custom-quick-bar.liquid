@@ -15,7 +15,12 @@
       {% if show %}
         <div class="quick-bar-item">
           <a href="{{ block.settings.link }}"></a>
-          <img src="{{ block.settings.icon | img_url: '280x' }}" alt="">
+          <img
+            src="{{ block.settings.icon | img_url: '280x' }}"
+            width="{{ block.settings.icon.width }}"
+            height="{{ block.settings.icon.height }}"
+            loading="lazy"
+            alt="{{ block.settings.text | escape }}">
           <p>
             {{ block.settings.text }}
           </p>
