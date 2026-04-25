@@ -52,7 +52,7 @@
 
 <script>
 (function(){
-  var SEED={{ product.id | json }},LIM=3;
+  var SEED={{ product.id | json }},SEED_TYPE={{ product.type | json }},LIM=3;
   var wrap=document.getElementById('bp-'+SEED);
   if(!wrap)return;
   var grid=wrap.querySelector('[data-bp-grid]'),btn=wrap.querySelector('[data-bp-btn]'),tNow=wrap.querySelector('[data-bp-now]'),tCmp=wrap.querySelector('[data-bp-cmp]');
@@ -120,14 +120,22 @@
     })
     .catch(function(err){btn.textContent=(err&&err.description)?'Unavailable':'Try again';setTimeout(function(){btn.textContent=orig;btn.disabled=false;update()},1800);});
   });
-  fetch('/recommendations/products.json?product_id='+SEED+'&intent=related&limit=6',{credentials:'same-origin'})
-  .then(function(r){return r.ok?r.json():null})
-  .then(function(j){
-    var arr=(j&&j.products)||[];
-    if(!arr.length)return;
+  function getRecs(intent){
+    return fetch('/recommendations/products.json?product_id='+SEED+'&intent='+intent+'&limit=10',{credentials:'same-origin'})
+      .then(function(r){return r.ok?r.json():null})
+      .then(function(j){return (j&&j.products)||[]});
+  }
+  function diffType(arr){
+    if(!SEED_TYPE)return arr;
+    var seedLc=SEED_TYPE.toLowerCase();
+    return arr.filter(function(p){return ((p.product_type||p.type||'').toLowerCase())!==seedLc});
+  }
+  getRecs('complementary').then(function(arr){
+    return arr.length?arr:getRecs('related').then(diffType);
+  }).then(function(arr){
+    if(!arr||!arr.length)return;
     var added=render(arr);
     if(added>0){wrap.hidden=false;update()}
-  })
-  .catch(function(){});
+  }).catch(function(){});
 })();
 </script>

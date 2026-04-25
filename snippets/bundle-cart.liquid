@@ -29,14 +29,22 @@
   var inr=function(c){return '₹'+(c/100).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0})};
   var sized=function(u){return u?u.replace(/(\.[a-zA-Z]+)(\?|$)/,'_300x$1$2'):''};
   var loading=false;
+  function getRecs(seed,intent){
+    return fetch('/recommendations/products.json?product_id='+seed+'&intent='+intent+'&limit=10',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null}).then(function(j){return (j&&j.products)||[]});
+  }
   function load(){
     if(loading)return;loading=true;
     fetch('/cart.js',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(c){
       if(!c.items||!c.items.length){wrap.hidden=true;loading=false;return}
-      var seed=c.items.slice().sort(function(a,b){return b.final_line_price-a.final_line_price})[0].product_id;
-      var inCart={};c.items.forEach(function(i){inCart[i.product_id]=1});
-      return fetch('/recommendations/products.json?product_id='+seed+'&intent=related&limit=6',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null}).then(function(j){
-        var arr=(j&&j.products)||[];
+      var top=c.items.slice().sort(function(a,b){return b.final_line_price-a.final_line_price})[0];
+      var seed=top.product_id,seedType=(top.product_type||'').toLowerCase();
+      var inCart={},inCartType={};c.items.forEach(function(i){inCart[i.product_id]=1;if(i.product_type)inCartType[i.product_type.toLowerCase()]=1});
+      return getRecs(seed,'complementary').then(function(arr){
+        return arr.length?arr:getRecs(seed,'related').then(function(rel){
+          if(!seedType)return rel;
+          return rel.filter(function(p){return ((p.product_type||p.type||'').toLowerCase())!==seedType});
+        });
+      }).then(function(arr){
         var picked=[];
         for(var i=0;i<arr.length&&picked.length<3;i++){
           var p=arr[i];
