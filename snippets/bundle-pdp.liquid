@@ -1,4 +1,13 @@
 {%- assign bp_variant = product.selected_or_first_available_variant -%}
+{%- assign bp_fallback_handle = 'bundle-defaults' -%}
+{%- assign bp_fallback_collection = collections[bp_fallback_handle] -%}
+{%- assign bp_fallback_handles = '' -%}
+{%- for fp in bp_fallback_collection.products limit: 12 -%}
+  {%- if fp.id != product.id and fp.available -%}
+    {%- assign bp_fallback_handles = bp_fallback_handles | append: fp.handle | append: ',' -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign bp_fallback_list = bp_fallback_handles | split: ',' -%}
 
 <style>
 .bp{margin:32px 0;padding:32px 16px;background:#f1effc;font-family:inherit}
@@ -53,6 +62,7 @@
 <script>
 (function(){
   var SEED={{ product.id | json }},SEED_TYPE={{ product.type | json }},LIM=3;
+  var FALLBACK_HANDLES={{ bp_fallback_list | json }};
   var wrap=document.getElementById('bp-'+SEED);
   if(!wrap)return;
   var grid=wrap.querySelector('[data-bp-grid]'),btn=wrap.querySelector('[data-bp-btn]'),tNow=wrap.querySelector('[data-bp-now]'),tCmp=wrap.querySelector('[data-bp-cmp]');
@@ -130,8 +140,21 @@
     var seedLc=SEED_TYPE.toLowerCase();
     return arr.filter(function(p){return ((p.product_type||p.type||'').toLowerCase())!==seedLc});
   }
+  function getFallback(){
+    var handles=(FALLBACK_HANDLES||[]).filter(function(h){return h});
+    if(!handles.length)return Promise.resolve([]);
+    for(var i=handles.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=handles[i];handles[i]=handles[j];handles[j]=t;}
+    handles=handles.slice(0,6);
+    return Promise.all(handles.map(function(h){
+      return fetch('/products/'+encodeURIComponent(h)+'.js',{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null})
+        .catch(function(){return null});
+    })).then(function(results){return results.filter(function(p){return p&&p.id})});
+  }
   getRecs('complementary').then(function(arr){
     return arr.length?arr:getRecs('related').then(diffType);
+  }).then(function(arr){
+    return (arr&&arr.length)?arr:getFallback();
   }).then(function(arr){
     if(!arr||!arr.length)return;
     var added=render(arr);
