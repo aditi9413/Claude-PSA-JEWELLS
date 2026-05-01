@@ -1,0 +1,57 @@
+{%- comment -%}
+  Usage:
+    Home:          {% render 'category-toggle', active: 'left' %}
+    Jewellery:     {% render 'category-toggle', active: 'right' %}
+  Or drop without active, it auto-detects from request.path.
+{%- endcomment -%}
+
+{%- assign left_label  = left_label  | default: 'Devotional Collection' -%}
+{%- assign right_label = right_label | default: 'Jewellery Collection' -%}
+{%- assign left_url    = left_url    | default: '/' -%}
+{%- assign right_url   = right_url   | default: '/pages/925-sterling-silver-jewellery-gifts' -%}
+{%- if active == blank -%}
+  {%- if request.path contains right_url -%}
+    {%- assign active = 'right' -%}
+  {%- else -%}
+    {%- assign active = 'left' -%}
+  {%- endif -%}
+{%- endif -%}
+
+<style>
+.ct{--ct-active:#2d0a2e;--ct-active-fg:#fff;--ct-border:#c9a96a;--ct-fg:#2d0a2e;display:flex;justify-content:center;padding:10px 16px;box-sizing:border-box}
+.ct-w{position:relative;display:flex;border:1.5px solid var(--ct-border);border-radius:999px;padding:4px;background:#fff;max-width:100%;box-sizing:border-box;gap:0}
+.ct-thumb{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:calc(100% - 8px);background:var(--ct-active);border-radius:999px;transition:transform .4s cubic-bezier(.4,0,.2,1);pointer-events:none;z-index:0}
+.ct[data-active="right"] .ct-thumb{transform:translateX(100%)}
+.ct-b{position:relative;z-index:1;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;padding:10px 22px;font-size:15px;font-weight:500;letter-spacing:.3px;color:var(--ct-fg);text-decoration:none;border-radius:999px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .3s ease}
+.ct[data-active="left"] .ct-b[data-side="left"],
+.ct[data-active="right"] .ct-b[data-side="right"]{color:var(--ct-active-fg)}
+.ct-b:focus-visible{outline:2px solid var(--ct-border);outline-offset:2px}
+@media(min-width:769px){.ct-w{display:inline-flex}.ct-b{min-width:180px}}
+@media(max-width:768px){.ct{padding:8px 10px}.ct-w{width:100%}.ct-b{padding:8px 6px;font-size:12px;letter-spacing:.2px}}
+@media(max-width:360px){.ct-b{font-size:11px;padding:8px 4px}}
+@media(prefers-reduced-motion:reduce){.ct-thumb,.ct-b{transition:none}}
+</style>
+
+<nav class="ct" data-active="{{ active }}" aria-label="Category">
+  <div class="ct-w">
+    <span class="ct-thumb" aria-hidden="true"></span>
+    <a href="{{ left_url }}"  class="ct-b" data-side="left"{% if active == 'left' %} aria-current="page"{% endif %}>{{ left_label }}</a>
+    <a href="{{ right_url }}" class="ct-b" data-side="right"{% if active == 'right' %} aria-current="page"{% endif %}>{{ right_label }}</a>
+  </div>
+</nav>
+
+<script>
+(function(){
+  document.querySelectorAll('.ct').forEach(function(nav){
+    nav.querySelectorAll('.ct-b').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        var side = btn.getAttribute('data-side');
+        if (nav.getAttribute('data-active') === side) return;
+        e.preventDefault();
+        nav.setAttribute('data-active', side);
+        setTimeout(function(){ window.location.href = btn.href; }, 380);
+      });
+    });
+  });
+})();
+</script>

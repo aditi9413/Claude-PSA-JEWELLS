@@ -1,0 +1,136 @@
+<div id="quick-bar-link" class="quick-bar-container">
+  <div class="quick-bar-wrapper">
+    {% for block in section.blocks %}
+      {%- liquid
+        assign label = block.settings.text | downcase
+        assign on_jewellery_page = false
+        if request.path contains '/pages/925-sterling-silver-jewellery-gifts'
+          assign on_jewellery_page = true
+        endif
+        assign is_jewellery_icon = false
+        if label contains '[j]'
+          assign is_jewellery_icon = true
+        endif
+        assign show = false
+        if on_jewellery_page and is_jewellery_icon
+          assign show = true
+        elsif on_jewellery_page == false and is_jewellery_icon == false
+          assign show = true
+        endif
+        assign clean_label = block.settings.text | replace: '[J]', '' | replace: '[j]', '' | strip
+      -%}
+      {% if show %}
+        <div class="quick-bar-item">
+          <a href="{{ block.settings.link }}"></a>
+          <img
+            src="{{ block.settings.icon | img_url: '360x' }}"
+            width="{{ block.settings.icon.width }}"
+            height="{{ block.settings.icon.height }}"
+            loading="lazy"
+            alt="{{ clean_label | escape }}">
+          <p>{{ clean_label }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  #shopify-section-{{ section.id }} .quick-bar-wrapper {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 16px 12px;
+    padding: 14px 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  #shopify-section-{{ section.id }} .quick-bar-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  #shopify-section-{{ section.id }} .quick-bar-item a {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+  #shopify-section-{{ section.id }} .quick-bar-item img {
+    width: 95px;
+    height: 95px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  #shopify-section-{{ section.id }} .quick-bar-item p {
+    font-size: 14px;
+    margin-top: 8px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  @media (max-width: 1024px) {
+    #shopify-section-{{ section.id }} .quick-bar-wrapper {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    #shopify-section-{{ section.id }} .quick-bar-wrapper {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px 8px;
+      padding: 10px 12px;
+    }
+    #shopify-section-{{ section.id }} .quick-bar-item img {
+      width: 68px;
+      height: 68px;
+    }
+    #shopify-section-{{ section.id }} .quick-bar-item p {
+      font-size: 11px;
+      margin-top: 6px;
+    }
+  }
+  @media (max-width: 420px) {
+    #shopify-section-{{ section.id }} .quick-bar-wrapper {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    #shopify-section-{{ section.id }} .quick-bar-item img {
+      width: 72px;
+      height: 72px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Custom Quick Bar",
+  "settings": [],
+  "blocks": [
+    {
+      "name": "Icon",
+      "type": "icon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text (prefix with [J] for Jewellery page only)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Quick Bar"
+    }
+  ]
+}
+{% endschema %}
