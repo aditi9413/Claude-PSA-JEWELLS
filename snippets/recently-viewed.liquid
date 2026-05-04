@@ -1,0 +1,87 @@
+<style>
+.rv{margin:32px 0;padding:36px 16px;background:#f1effc;font-family:inherit}
+.rv-h{font-size:22px;text-align:center;margin:0 0 24px;color:#38113d;font-weight:600;letter-spacing:.3px;line-height:1.25}
+.rv-s{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:10px;scrollbar-width:thin}
+.rv-s::-webkit-scrollbar{height:4px}
+.rv-s::-webkit-scrollbar-thumb{background:rgba(56,17,61,.25);border-radius:2px}
+.rv-c{flex:0 0 170px;scroll-snap-align:start;display:flex;flex-direction:column}
+.rv-l{text-decoration:none;color:inherit;display:block}
+.rv-l img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:6px;display:block;background:#f5f5f5}
+.rv-t{font-size:12px;margin:10px 0 4px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#222;min-height:2.7em}
+.rv-p{font-size:13px;font-weight:600;color:#111;margin-bottom:10px}
+.rv-pc{font-size:11px;color:#888;text-decoration:line-through;margin-left:4px;font-weight:400}
+.rv-b{margin-top:auto;display:flex;align-items:center;justify-content:center;width:100%;padding:11px 12px;border:0;background:#38113d;color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;text-decoration:none;border-radius:4px;cursor:pointer;transition:background .2s ease,opacity .2s ease;font-family:inherit;box-sizing:border-box;line-height:1.2;min-height:38px}
+.rv-b:hover:not(:disabled){background:#2a0c2e;color:#fff}
+.rv-b:focus-visible{outline:2px solid #b08d57;outline-offset:2px}
+.rv-b:disabled{background:#a8a8a8;cursor:not-allowed;color:#fff;opacity:.85}
+.rv-b.added{background:#1b8a3b;color:#fff}
+.rv-c-inner{display:flex;flex-direction:column;height:100%}
+.rv[hidden]{display:none}
+@media(min-width:768px){.rv{padding:48px 32px;margin:48px 0}.rv-h{font-size:28px;margin-bottom:28px}.rv-c{flex:0 0 220px}.rv-s{gap:16px}.rv-t{font-size:13px;margin:12px 0 5px}.rv-p{font-size:14px;margin-bottom:12px}}
+</style>
+
+<section class="rv" id="rv" hidden aria-label="Recently viewed products">
+  <div class="rv-h">Recently viewed</div>
+  <div class="rv-s" id="rv-s"></div>
+</section>
+
+<script>
+(function(){
+  var K='psa_rv',MAX=8;
+  {%- if product -%}
+  var cur={{ product.handle | json }};
+  {%- else -%}
+  var cur=null;
+  {%- endif -%}
+  var list=[];
+  try{list=JSON.parse(localStorage.getItem(K))||[]}catch(e){}
+  if(!Array.isArray(list))list=[];
+  if(cur){list=list.filter(function(x){return x!==cur});list.unshift(cur);list=list.slice(0,MAX+1);try{localStorage.setItem(K,JSON.stringify(list))}catch(e){}}
+  var show=list.filter(function(x){return x!==cur}).slice(0,MAX);
+  if(!show.length)return;
+  var wrap=document.getElementById('rv'),strip=document.getElementById('rv-s');
+  if(!wrap||!strip)return;
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+  var inr=function(c){return '₹'+(c/100).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})};
+  var sized=function(u){return u?u.replace(/(\.[a-zA-Z]+)(\?|$)/,'_400x$1$2'):''};
+  Promise.all(show.map(function(h){return fetch('/products/'+encodeURIComponent(h)+'.js',{credentials:'same-origin'}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})})).then(function(arr){
+    var parts=arr.filter(function(p){return p&&p.handle}).map(function(p){
+      var img=sized(p.featured_image||(p.images&&p.images[0])||''),title=esc(p.title||''),price=inr(p.price),url='/products/'+encodeURIComponent(p.handle);
+      var cmp=p.compare_at_price&&p.compare_at_price>p.price?'<span class="rv-pc">'+inr(p.compare_at_price)+'</span>':'';
+      var avail=p.available!==false;
+      var variants=p.variants||[];
+      var firstAvail=null;
+      for(var i=0;i<variants.length;i++){if(variants[i].available){firstAvail=variants[i];break}}
+      var btn='';
+      if(!avail||!firstAvail){
+        btn='<button class="rv-b" disabled type="button">Sold out</button>';
+      }else if(variants.length===1){
+        btn='<button class="rv-b" data-variant-id="'+firstAvail.id+'" type="button">Add to cart</button>';
+      }else{
+        btn='<a class="rv-b" href="'+url+'">Choose options</a>';
+      }
+      return '<div class="rv-c"><div class="rv-c-inner"><a class="rv-l" href="'+url+'"><img src="'+esc(img)+'" alt="'+title+'" loading="lazy" width="400" height="400"><div class="rv-t">'+title+'</div><div class="rv-p">'+price+cmp+'</div></a>'+btn+'</div></div>';
+    });
+    if(parts.length){strip.innerHTML=parts.join('');wrap.hidden=false;bind()}
+  });
+  function bind(){
+    strip.addEventListener('click',function(e){
+      var b=e.target.closest('button.rv-b[data-variant-id]');
+      if(!b||b.disabled)return;
+      e.preventDefault();
+      var id=b.getAttribute('data-variant-id'),orig=b.textContent;
+      b.disabled=true;b.textContent='Adding…';
+      fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},credentials:'same-origin',body:JSON.stringify({id:parseInt(id,10),quantity:1})})
+      .then(function(r){return r.ok?r.json():r.json().then(function(j){return Promise.reject(j)})})
+      .then(function(){
+        b.classList.add('added');b.textContent='✓ Added';
+        ['cart:updated','cart:refresh','cart:change','cart:item-added','ajaxCart.afterCartLoad'].forEach(function(ev){try{document.dispatchEvent(new CustomEvent(ev,{bubbles:true}))}catch(_){}});
+        var cd=document.querySelector('cart-drawer,cart-notification,[data-cart-drawer]');
+        if(cd&&typeof cd.open==='function'){try{cd.open()}catch(_){}}
+        setTimeout(function(){b.classList.remove('added');b.textContent=orig;b.disabled=false},2000);
+      })
+      .catch(function(err){b.textContent=(err&&err.description)?'Unavailable':'Try again';setTimeout(function(){b.textContent=orig;b.disabled=false},1600);});
+    });
+  }
+})();
+</script>

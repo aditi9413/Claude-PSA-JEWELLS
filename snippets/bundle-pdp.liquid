@@ -1,0 +1,362 @@
+{%- assign bp_variant = product.selected_or_first_available_variant -%}
+{%- assign bp_fallback_handle = 'bundle-defaults' -%}
+{%- assign bp_fallback_collection = collections[bp_fallback_handle] -%}
+{%- assign bp_fallback_handles = '' -%}
+{%- for fp in bp_fallback_collection.products limit: 12 -%}
+  {%- if fp.id != product.id and fp.available -%}
+    {%- assign bp_fallback_handles = bp_fallback_handles | append: fp.handle | append: ',' -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign bp_fallback_list = bp_fallback_handles | split: ',' -%}
+
+<style>
+.bp{margin:32px 0;padding:32px 16px;background:#f1effc;font-family:inherit}
+.bp-h{font-size:22px;text-align:center;margin:0 0 6px;color:#38113d;font-weight:600;letter-spacing:.3px;line-height:1.25}
+.bp-sub{text-align:center;color:#38113d;opacity:.7;font-size:12px;margin:0 0 22px;letter-spacing:.3px}
+.bp-grid{display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin;justify-content:flex-start}
+.bp-grid::-webkit-scrollbar{height:4px}
+.bp-grid::-webkit-scrollbar-thumb{background:rgba(56,17,61,.25);border-radius:2px}
+.bp-card{flex:0 0 130px;display:flex;flex-direction:column;text-align:center;position:relative}
+.bp-card label{cursor:pointer;display:block;width:100%;margin:0}
+.bp-card.locked label{cursor:default}
+.bp-card input[type=checkbox]{position:absolute;top:6px;left:6px;width:18px;height:18px;accent-color:#38113d;z-index:2;margin:0;cursor:pointer}
+.bp-card.locked input[type=checkbox]{cursor:default}
+.bp-img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:6px;background:#fff;display:block;transition:opacity .2s}
+.bp-card.unchecked .bp-img{opacity:.35}
+.bp-t{font-size:11px;margin:8px 0 3px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#222;min-height:2.6em}
+.bp-pr{font-size:12px;font-weight:600;color:#111}
+.bp-cmp{font-size:10px;color:#888;text-decoration:line-through;margin-left:3px;font-weight:400}
+.bp-plus{flex:0 0 16px;align-self:center;font-size:20px;font-weight:300;color:#38113d;padding-top:30%;user-select:none}
+.bp-foot{margin-top:20px;text-align:center}
+.bp-total{font-size:13px;color:#38113d;margin:0 0 14px}
+.bp-total b{font-size:18px;font-weight:600}
+.bp-total s{color:#888;font-weight:400;font-size:13px;margin-left:8px}
+.bp-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:340px;padding:13px 16px;border:0;background:#38113d;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;border-radius:4px;cursor:pointer;transition:background .2s ease,opacity .2s ease;font-family:inherit;line-height:1.2;min-height:44px}
+.bp-btn:hover:not(:disabled){background:#2a0c2e}
+.bp-btn:disabled{opacity:.55;cursor:not-allowed}
+.bp[hidden]{display:none}
+@media(min-width:768px){
+  .bp{padding:48px 32px;margin:48px 0}
+  .bp-h{font-size:26px}
+  .bp-sub{font-size:13px}
+  .bp-card{flex:0 0 170px}
+  .bp-t{font-size:12px}
+  .bp-pr{font-size:13px}
+  .bp-grid{justify-content:center;gap:8px}
+  .bp-plus{font-size:24px}
+}
+</style>
+
+<section class="bp" id="bp-{{ product.id }}" hidden aria-label="Bundle suggestions">
+  <div class="bp-h">Bundle this with</div>
+  <div class="bp-sub">Frequently bought together</div>
+
+  <div class="bp-grid" data-bp-grid>
+    <div class="bp-card locked" data-id="{{ bp_variant.id }}" data-price="{{ bp_variant.price }}" data-cmp="{{ bp_variant.compare_at_price | default: 0 }}" data-locked="1">
+      <label>
+        <input type="checkbox" checked disabled aria-label="This product required">
+        <img class="bp-img" src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy" width="400" height="400">
+        <div class="bp-t">{{ product.title }}</div>
+        <div class="bp-pr">
+          {{ bp_variant.price | money }}
+          {% if bp_variant.compare_at_price > bp_variant.price %}
+            <span class="bp-cmp">{{ bp_variant.compare_at_price | money }}</span>
+          {% endif %}
+        </div>
+      </label>
+    </div>
+  </div>
+
+  <div class="bp-foot">
+    <div class="bp-total">Bundle total: <b data-bp-now>—</b><span data-bp-cmp></span></div>
+    <button type="button" class="bp-btn" data-bp-btn>Add bundle to cart</button>
+  </div>
+</section>
+
+<script>
+(function(){
+  var SEED={{ product.id | json }},
+      SEED_TYPE={{ product.type | json }},
+      LIM=3;
+
+  var FALLBACK_HANDLES={{ bp_fallback_list | json }};
+
+  var wrap=document.getElementById('bp-'+SEED);
+  if(!wrap)return;
+
+  var grid=wrap.querySelector('[data-bp-grid]'),
+      btn=wrap.querySelector('[data-bp-btn]'),
+      tNow=wrap.querySelector('[data-bp-now]'),
+      tCmp=wrap.querySelector('[data-bp-cmp]');
+
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function inr(c){
+    return '₹'+(c/100).toLocaleString('en-IN',{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    });
+  }
+
+  function sized(u){
+    return u ? u.replace(/(\.[a-zA-Z]+)(\?|$)/,'_400x$1$2') : '';
+  }
+
+  function render(arr){
+    var seen={};
+    seen[SEED]=1;
+    var added=0;
+
+    for(var k=0;k<arr.length&&added<LIM;k++){
+      var p=arr[k];
+      if(!p||!p.id||seen[p.id])continue;
+
+      var v=null,vs=p.variants||[];
+
+      for(var i=0;i<vs.length;i++){
+        if(vs[i].available){
+          v=vs[i];
+          break;
+        }
+      }
+
+      if(!v)continue;
+
+      seen[p.id]=1;
+
+      var img=sized(p.featured_image||(p.images&&p.images[0])||''),
+          title=esc(p.title||''),
+          price=v.price,
+          cmp=v.compare_at_price||0;
+
+      var plus='<div class="bp-plus" aria-hidden="true">+</div>';
+
+      var card=
+        '<div class="bp-card" data-id="'+v.id+'" data-price="'+price+'" data-cmp="'+cmp+'">'+
+          '<label>'+
+            '<input type="checkbox" checked aria-label="Add '+title+' to bundle">'+
+            '<img class="bp-img" src="'+esc(img)+'" alt="'+title+'" loading="lazy" width="400" height="400">'+
+            '<div class="bp-t">'+title+'</div>'+
+            '<div class="bp-pr">'+inr(price)+(cmp>price?'<span class="bp-cmp">'+inr(cmp)+'</span>':'')+'</div>'+
+          '</label>'+
+        '</div>';
+
+      grid.insertAdjacentHTML('beforeend',plus+card);
+      added++;
+    }
+
+    return added;
+  }
+
+  function update(){
+    var now=0,cmp=0,any=0,hasDiscount=false;
+
+    grid.querySelectorAll('.bp-card').forEach(function(c){
+      var cb=c.querySelector('input[type=checkbox]');
+      var price=parseInt(c.dataset.price,10)||0;
+      var compareAt=parseInt(c.dataset.cmp,10)||0;
+      var checked=c.dataset.locked==='1'||(cb&&cb.checked);
+
+      if(checked){
+        now+=price;
+        cmp+=(compareAt>price?compareAt:price);
+        if(compareAt>price)hasDiscount=true;
+        c.classList.remove('unchecked');
+        any++;
+      }else{
+        c.classList.add('unchecked');
+      }
+    });
+
+    tNow.textContent=inr(now);
+    tCmp.innerHTML=hasDiscount?' <s>'+inr(cmp)+'</s>':'';
+    btn.disabled=any<2;
+  }
+
+  grid.addEventListener('change',function(e){
+    if(e.target.matches('input[type=checkbox]'))update();
+  });
+
+  function dispatchThemeCartRefresh(responseJson){
+    return fetch(window.themeVariables.routes.cartUrl + '.js', {
+      credentials:'same-origin',
+      cache:'no-store'
+    })
+    .then(function(response){
+      return response.json();
+    })
+    .then(function(cartContent){
+      document.documentElement.dispatchEvent(
+        new CustomEvent('cart:updated',{
+          bubbles:true,
+          detail:{
+            cart:cartContent
+          }
+        })
+      );
+
+      cartContent.sections=responseJson.sections || {};
+
+      document.documentElement.dispatchEvent(
+        new CustomEvent('cart:refresh',{
+          bubbles:true,
+          detail:{
+            cart:cartContent,
+            openMiniCart:
+              window.themeVariables.settings.cartType === 'drawer'
+          }
+        })
+      );
+
+      document.documentElement.dispatchEvent(
+        new CustomEvent('cart-notification:show',{
+          bubbles:true,
+          cancelable:true,
+          detail:{
+            status:'success'
+          }
+        })
+      );
+    });
+  }
+
+  btn.addEventListener('click',function(){
+    var selectedItems=[];
+
+    grid.querySelectorAll('.bp-card').forEach(function(c){
+      var cb=c.querySelector('input[type=checkbox]');
+      var variantId=parseInt(c.dataset.id,10);
+
+      if(variantId && (c.dataset.locked==='1'||(cb&&cb.checked))){
+        selectedItems.push({
+          id:variantId,
+          quantity:1
+        });
+      }
+    });
+
+    if(selectedItems.length<2)return;
+
+    var orig=btn.textContent;
+    btn.disabled=true;
+    btn.textContent='Adding…';
+
+    fetch(window.themeVariables.routes.cartAddUrl + '.js',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Accept':'application/json',
+        'X-Requested-With':'XMLHttpRequest'
+      },
+      credentials:'same-origin',
+      body:JSON.stringify({
+        items:selectedItems,
+        sections:['mini-cart']
+      })
+    })
+    .then(function(response){
+      return response.json().then(function(json){
+        if(!response.ok){
+          throw json;
+        }
+        return json;
+      });
+    })
+    .then(function(responseJson){
+      btn.textContent='✓ Added to cart';
+
+      return dispatchThemeCartRefresh(responseJson).then(function(){
+        setTimeout(function(){
+          btn.textContent=orig;
+          btn.disabled=false;
+          update();
+        },1600);
+      });
+    })
+    .catch(function(err){
+      console.warn('Bundle add failed:',err);
+
+      btn.textContent=(err&&err.description)?'Unavailable':'Try again';
+
+      document.documentElement.dispatchEvent(
+        new CustomEvent('cart-notification:show',{
+          bubbles:true,
+          cancelable:true,
+          detail:{
+            status:'error',
+            error:(err&&err.description)?err.description:'Could not add bundle to cart'
+          }
+        })
+      );
+
+      setTimeout(function(){
+        btn.textContent=orig;
+        btn.disabled=false;
+        update();
+      },1600);
+    });
+  });
+
+  function getRecs(intent){
+    return fetch('/recommendations/products.json?product_id='+SEED+'&intent='+intent+'&limit=10',{
+      credentials:'same-origin'
+    })
+    .then(function(r){
+      return r.ok?r.json():null;
+    })
+    .then(function(j){
+      return (j&&j.products)||[];
+    });
+  }
+
+  function diffType(arr){
+    if(!SEED_TYPE)return arr;
+
+    var seedLc=SEED_TYPE.toLowerCase();
+
+    return arr.filter(function(p){
+      return ((p.product_type||p.type||'').toLowerCase())!==seedLc;
+    });
+  }
+
+  function getFallback(){
+    var handles=(FALLBACK_HANDLES||[]).filter(function(h){return h;});
+    if(!handles.length)return Promise.resolve([]);
+    for(var i=handles.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var t=handles[i];handles[i]=handles[j];handles[j]=t;
+    }
+    handles=handles.slice(0,6);
+    return Promise.all(handles.map(function(h){
+      return fetch('/products/'+encodeURIComponent(h)+'.js',{credentials:'same-origin'})
+        .then(function(r){return r.ok?r.json():null;})
+        .catch(function(){return null;});
+    })).then(function(results){
+      return results.filter(function(p){return p&&p.id;});
+    });
+  }
+
+  getRecs('complementary')
+  .then(function(arr){
+    return arr.length?arr:getRecs('related').then(diffType);
+  })
+  .then(function(arr){
+    return (arr&&arr.length)?arr:getFallback();
+  })
+  .then(function(arr){
+    if(!arr||!arr.length)return;
+
+    var added=render(arr);
+
+    if(added>0){
+      wrap.hidden=false;
+      update();
+    }
+  })
+  .catch(function(){});
+})();
+</script>
