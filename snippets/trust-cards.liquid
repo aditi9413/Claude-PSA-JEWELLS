@@ -1,0 +1,91 @@
+{%- comment -%}
+  Reusable three-card trust signal strip.
+
+  Optional params:
+    card_1_title, card_1_subtitle,
+    card_2_title, card_2_subtitle,
+    card_3_title, card_3_subtitle
+{%- endcomment -%}
+
+<style>
+  .trust-cards{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5em;
+    margin: 0.75em 0;
+  }
+  .trust-cards__card{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    padding: 0.75em 0.4em;
+    background: #fff;
+    border: 1px solid #ead7c9;
+    border-radius: 8px;
+    color: #3a2a4a;
+    line-height: 1.25;
+  }
+  .trust-cards__icon{
+    color: #3a2a4a;
+    margin-bottom: 0.45em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .trust-cards__icon svg{ width: 28px; height: 28px; }
+  .trust-cards__title{
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.2em;
+  }
+  .trust-cards__subtitle{
+    font-size: 0.68em;
+    color: #6b5f55;
+    font-weight: 500;
+    margin: 0;
+  }
+  @media (max-width: 480px){
+    .trust-cards__title{ font-size: 0.72em; }
+    .trust-cards__subtitle{ font-size: 0.62em; }
+    .trust-cards__icon svg{ width: 24px; height: 24px; }
+  }
+</style>
+
+<div class="trust-cards" role="note" aria-label="Trust badges">
+  <div class="trust-cards__card">
+    <span class="trust-cards__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/>
+        <circle cx="10" cy="7" r="3.5"/>
+        <path d="M21 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M17 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </span>
+    <p class="trust-cards__title">{{ card_1_title | default: '10,000+ Customers Chose Us' }}</p>
+    <p class="trust-cards__subtitle">{{ card_1_subtitle | default: 'And Came Back' }}</p>
+  </div>
+
+  <div class="trust-cards__card">
+    <span class="trust-cards__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l2.9 6 6.6.95-4.78 4.55 1.13 6.6L12 17.3l-5.85 2.8 1.13-6.6L2.5 8.95 9.1 8z"/>
+      </svg>
+    </span>
+    <p class="trust-cards__title">{{ card_2_title | default: '4.9★ Rating' }}</p>
+    <p class="trust-cards__subtitle">{{ card_2_subtitle | default: 'from 2,500+ Verified Buyers' }}</p>
+  </div>
+
+  <div class="trust-cards__card">
+    <span class="trust-cards__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </span>
+    <p class="trust-cards__title">{{ card_3_title | default: 'Purity Guaranteed' }}</p>
+    <p class="trust-cards__subtitle">{{ card_3_subtitle | default: 'Certified Silver from a BIS-Certified Brand' }}</p>
+  </div>
+</div>
